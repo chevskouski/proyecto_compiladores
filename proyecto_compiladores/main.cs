@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace proyecto_compiladores
 {
@@ -56,18 +57,29 @@ namespace proyecto_compiladores
             mantenimiento.Show();
         }
 
+        public string _txt_cadena
+        {
+            get { return txt_input.Text; }
+            set { txt_input.Text = value; }
+        }
+
         private void btn_tokens_Click(object sender, EventArgs e)
         {
             mantenimiento _mantenimiento = new mantenimiento();
             _mantenimiento.vaciar_tokens();
             funciones.generar_token_depurado(txt_input.Text);
-            frm_tokens tokens = new frm_tokens();
+            frm_tokens tokens = new frm_tokens(this);
             tokens.Show();
         }
 
         private void btn_simbolos_Click(object sender, EventArgs e)
         {
-
+            mantenimiento _mantenimiento = new mantenimiento();
+            _mantenimiento.vaciar_tokens();
+            funciones.generar_token_depurado(txt_input.Text);
+            frm_tokens tokens = new frm_tokens(this);
+            tokens.Show();
+            tokens.cargar_simbolos();
         }
     }
 }

@@ -126,6 +126,40 @@ namespace proyecto_compiladores
             return lista;
         }
 
+        public List<Object> consultar_simbolos()
+        {
+            MySqlConnection conexion_db = cn.conexion_db();
+            conexion_db.Open();
+            List<Object> lista = new List<object>();
+            string comando_sql = "SELECT * FROM sys_simbolo ORDER BY id_simbolo ASC";
+            try
+            {
+                MySqlDataReader reader;
+                MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
+                reader = comando.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        simbolo _construir_simbolo = new simbolo();
+                        _construir_simbolo.Id_Simbolo = reader.GetString(0);
+                        _construir_simbolo.Tipo_Simbolo = reader.GetString(1);
+
+                        lista.Add(_construir_simbolo);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("error:" + e);
+            }
+            finally
+            {
+                conexion_db.Close();
+            }
+            return lista;
+        }
+
         public List<Object> consultar_tokens()
         {
             MySqlConnection conexion_db = cn.conexion_db();
@@ -190,7 +224,31 @@ namespace proyecto_compiladores
             bool estado_consulta = false;
             MySqlConnection conexion_db = cn.conexion_db();
             conexion_db.Open();
-            string comando_sql = "TRUNCATE TABLE sys_token; TRUNCATE TABLE sys_token_error; TRUNCATE TABLE sys_token_validado;";
+            string comando_sql = "TRUNCATE TABLE sys_token; TRUNCATE TABLE sys_token_error; TRUNCATE TABLE sys_token_validado; TRUNCATE TABLE sys_simbolo;";
+            try
+            {
+                MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
+                comando.ExecuteNonQuery();
+                estado_consulta = true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("error al limpiar datos:" + e);
+                estado_consulta = false;
+            }
+            finally
+            {
+                conexion_db.Close();
+            }
+            return estado_consulta;
+        }
+
+        public bool vaciar_simbolos()
+        {
+            bool estado_consulta = false;
+            MySqlConnection conexion_db = cn.conexion_db();
+            conexion_db.Open();
+            string comando_sql = "TRUNCATE TABLE sys_simbolo;";
             try
             {
                 MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
@@ -389,5 +447,83 @@ namespace proyecto_compiladores
                 conexion_db.Close();
             }
         }
+
+        public void generar_simbolos()
+        {
+            var lista_simbolos = new List<(string _id_simbolo, string _tipo_simbolo)>();
+            MySqlConnection conexion_db = cn.conexion_db();
+            conexion_db.Open();
+            string comando_sql = "select lexema, tipo_lexema from sys_token_validado where tipo_lexema = 'Identificador';";
+            try
+            {
+                MySqlDataReader reader;
+                MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
+                reader = comando.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        string Id_Simbolo = reader.GetString(0);
+                        string Tipo_Simbolo = reader.GetString(1);
+                        if (lista_simbolos.Count() > 0)
+                        {
+                            bool agregar_simbolo = true;
+                            for (int i = 0; i < lista_simbolos.Count(); i++)
+                            {
+                                if(lista_simbolos[i]._id_simbolo == Id_Simbolo)
+                                {
+                                    agregar_simbolo = false;
+                                }
+                            }
+
+                            if(agregar_simbolo == true)
+                            {
+                                lista_simbolos.Add((_id_simbolo: Id_Simbolo, _tipo_simbolo: Tipo_Simbolo));
+                            }
+                        }
+                        else
+                        {
+                            lista_simbolos.Add((_id_simbolo: Id_Simbolo, _tipo_simbolo: Tipo_Simbolo));
+                        }
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("error:" + e);
+            }
+            finally
+            {
+                conexion_db.Close();
+            }
+
+            for (int i = 0; i < lista_simbolos.Count(); i++)
+            {
+                insertar_simbolos(lista_simbolos[i]._id_simbolo, lista_simbolos[i]._tipo_simbolo);
+            }
+
+        }
+
+        public void insertar_simbolos(string _id_simbolo, string _tipo_simbolo)
+        {
+            MySqlConnection conexion_db = cn.conexion_db();
+            conexion_db.Open();
+            string comando_sql = "INSERT INTO sys_simbolo (id_simbolo, tipo_simbolo) VALUES ('"+_id_simbolo+"', '"+_tipo_simbolo+"');";
+            try
+            {
+                MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
+                comando.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("error al ingresar simbolo:" + e);
+            }
+            finally
+            {
+                conexion_db.Close();
+            }
+        }
+
     }
 }

@@ -104,7 +104,7 @@ namespace proyecto_compiladores
             }
             return contenido_archivo;
         }
-        
+
         public void generar_token_depurado(string _cadena)
         {
             //Inicializando Variables Necesarias
@@ -141,7 +141,7 @@ namespace proyecto_compiladores
             for (int i = 0; i <= longitud_cadena; i++)
             {
                 leer_caracter = leer_cadena_caracteres(_cadena, i);
-                
+
 
                 //Estandarizacion y conversion del sitring obtenido a char.
                 if (leer_caracter == "[espacio]:32")
@@ -181,15 +181,15 @@ namespace proyecto_compiladores
                             tipo_lexema = _tipo_lexema[1];
                             estado = 1;
                         }
-                        else if (caracter == ':' || caracter == '>' || caracter == '<' || caracter == '=' || 
-                                 caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || 
+                        else if (caracter == ':' || caracter == '>' || caracter == '<' || caracter == '=' ||
+                                 caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' ||
                                  caracter == '|' || caracter == '&')//Identificar Operador
                         {
                             lexema += caracter.ToString();
                             tipo_lexema = _tipo_lexema[3];
                             estado = 1;
                         }
-                        else if (caracter == '(' || caracter == ')' || caracter == '{' || caracter == '}' || 
+                        else if (caracter == '(' || caracter == ')' || caracter == '{' || caracter == '}' ||
                                  caracter == ';' || caracter == ',') //Identificar Signos de Puntuacion
                         {
                             lexema += caracter.ToString();
@@ -212,7 +212,7 @@ namespace proyecto_compiladores
                             linea_caracter = Linea;
                             caracter_conflicto = caracter.ToString();
                             estado = 1;
-                            tipo_lexema = "error de sintaxis" + " - Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | Caracter: " + caracter_conflicto;
+                            tipo_lexema = "Lexema error" + " - | Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | " ;
                         }
 
                         //Agregar ultimo lexema de la cadena [CASO/ESTADO #0]
@@ -247,7 +247,7 @@ namespace proyecto_compiladores
                                 }
                                 else //Caracter actual no es numerico, el lexema no cumple las normas para ser un numero o un ID
                                 {
-                                    tipo_lexema = "error de sintaxis" + " - Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | Caracter: " + caracter_conflicto;
+                                    tipo_lexema = "Lexema error" + " - | Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | ";
                                     lexema += caracter.ToString();
                                 }
                             }
@@ -257,7 +257,7 @@ namespace proyecto_compiladores
                             }
                             else //error al identificar ID, existe un operador y/o un signo de puntuacion dentro del lexema
                             {
-                                tipo_lexema = "error de sintaxis" + " - Linea: "+linea_caracter +" | Columna: "+ columna_caracter + " | Caracter: " + caracter_conflicto;
+                                tipo_lexema = "Lexema error " + " - | Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | ";
                                 lexema += caracter.ToString();
                             }
                         }
@@ -273,10 +273,10 @@ namespace proyecto_compiladores
                                 lexema += caracter.ToString();
                                 columna_caracter = Columna - 1;
                                 linea_caracter = Linea;
-                                tipo_lexema = "error de sintaxis" + " - Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | Caracter: " + caracter_conflicto;
+                                tipo_lexema = "Lexema error" + " - | Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | ";
                             }
                         }
-                        else if (caracter == '=' && lexema == ":" || caracter == '>' && lexema == "<" || 
+                        else if (caracter == '=' && lexema == ":" || caracter == '>' && lexema == "<" ||
                                  caracter == '|' && lexema == "|" || caracter == '&' && lexema == "&")//Identificando operador
                         {
                             lexema += caracter.ToString();
@@ -299,7 +299,7 @@ namespace proyecto_compiladores
                             columna_caracter = Columna - 1;
                             linea_caracter = Linea;
                             caracter_conflicto = caracter.ToString();
-                            tipo_lexema = "error de sintaxis" + " - Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | Caracter: " + caracter_conflicto;
+                            tipo_lexema = "Lexema error" + " - | Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | ";
                         }
 
                         //Agregar ultimo lexema de la cadena [CASO/ESTADO #1]
@@ -319,7 +319,7 @@ namespace proyecto_compiladores
                             columna_caracter = Columna - 1;
                             linea_caracter = Linea;
                             caracter_conflicto = caracter.ToString();
-                            tipo_lexema = "error de sintaxis" + " - Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | Caracter: " + caracter_conflicto;
+                            tipo_lexema = "Lexema error" + " - | Linea: " + linea_caracter + " | Columna: " + columna_caracter + " | ";
                         }
 
                         //Agregar ultimo lexema de la cadena [CASO/ESTADO #2]
@@ -443,6 +443,12 @@ namespace proyecto_compiladores
             }
 
             return tipo_lexema;
+        }
+
+        public void generar_simbolos()
+        {
+            int _id_descipcion = 0;
+            string tipo = null;
         }
 
     }
