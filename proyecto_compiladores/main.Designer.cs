@@ -39,13 +39,14 @@
             this.txt_input = new System.Windows.Forms.TextBox();
             this.btn_limpiar_input = new System.Windows.Forms.Button();
             this.panel_control = new System.Windows.Forms.Panel();
+            this.btn_validar_rp1 = new System.Windows.Forms.Button();
+            this.btn_simbolos = new System.Windows.Forms.Button();
             this.btn_tokens = new System.Windows.Forms.Button();
             this.btn_mantenimiento = new System.Windows.Forms.Button();
             this.btn_lineas_columnas = new System.Windows.Forms.Button();
             this.btn_mostrar_caracteres = new System.Windows.Forms.Button();
             this.btn_flujo_caracteres = new System.Windows.Forms.Button();
             this.btn_seleccionar_archivo = new System.Windows.Forms.Button();
-            this.btn_simbolos = new System.Windows.Forms.Button();
             this.layout_panel_general.SuspendLayout();
             this.panel_output.SuspendLayout();
             this.panel_input.SuspendLayout();
@@ -171,6 +172,7 @@
             // 
             // panel_control
             // 
+            this.panel_control.Controls.Add(this.btn_validar_rp1);
             this.panel_control.Controls.Add(this.btn_simbolos);
             this.panel_control.Controls.Add(this.btn_tokens);
             this.panel_control.Controls.Add(this.btn_mantenimiento);
@@ -183,6 +185,30 @@
             this.panel_control.Name = "panel_control";
             this.panel_control.Size = new System.Drawing.Size(110, 519);
             this.panel_control.TabIndex = 2;
+            // 
+            // btn_validar_rp1
+            // 
+            this.btn_validar_rp1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_validar_rp1.Location = new System.Drawing.Point(3, 392);
+            this.btn_validar_rp1.Name = "btn_validar_rp1";
+            this.btn_validar_rp1.Size = new System.Drawing.Size(107, 50);
+            this.btn_validar_rp1.TabIndex = 7;
+            this.btn_validar_rp1.Text = "Parser";
+            this.btn_validar_rp1.UseVisualStyleBackColor = true;
+            this.btn_validar_rp1.Click += new System.EventHandler(this.btn_validar_rp1_Click);
+            // 
+            // btn_simbolos
+            // 
+            this.btn_simbolos.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_simbolos.Location = new System.Drawing.Point(3, 336);
+            this.btn_simbolos.Name = "btn_simbolos";
+            this.btn_simbolos.Size = new System.Drawing.Size(107, 50);
+            this.btn_simbolos.TabIndex = 6;
+            this.btn_simbolos.Text = "Tabla de Simbolos";
+            this.btn_simbolos.UseVisualStyleBackColor = true;
+            this.btn_simbolos.Click += new System.EventHandler(this.btn_simbolos_Click);
             // 
             // btn_tokens
             // 
@@ -256,18 +282,6 @@
             this.btn_seleccionar_archivo.UseVisualStyleBackColor = true;
             this.btn_seleccionar_archivo.Click += new System.EventHandler(this.btn_seleccionar_archivo_Click);
             // 
-            // btn_simbolos
-            // 
-            this.btn_simbolos.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_simbolos.Location = new System.Drawing.Point(3, 336);
-            this.btn_simbolos.Name = "btn_simbolos";
-            this.btn_simbolos.Size = new System.Drawing.Size(107, 50);
-            this.btn_simbolos.TabIndex = 6;
-            this.btn_simbolos.Text = "Tabla de Simbolos";
-            this.btn_simbolos.UseVisualStyleBackColor = true;
-            this.btn_simbolos.Click += new System.EventHandler(this.btn_simbolos_Click);
-            // 
             // main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -307,6 +321,7 @@
         private System.Windows.Forms.Button btn_mantenimiento;
         private System.Windows.Forms.Button btn_tokens;
         private System.Windows.Forms.Button btn_simbolos;
+        private System.Windows.Forms.Button btn_validar_rp1;
     }
 }
 

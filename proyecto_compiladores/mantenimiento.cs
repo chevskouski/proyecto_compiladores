@@ -12,6 +12,8 @@ namespace proyecto_compiladores
     class mantenimiento
     {
         db_conexion cn = new db_conexion();
+        public int indice = 1;
+        public string linea_columna = "";
         public List<Object> consultar_datos()
         {
             MySqlConnection conexion_db = cn.conexion_db();
@@ -195,12 +197,12 @@ namespace proyecto_compiladores
             }
             return lista;
         }
-        public bool insertar_token(string _lexema, string _tipo)
+        public bool insertar_token(string _lexema, string _tipo, string _linea_columna)
         {
             bool estado_consulta = false;
             MySqlConnection conexion_db = cn.conexion_db();
             conexion_db.Open();
-            string comando_sql = "INSERT INTO sys_token(lexema, tipo_lexema) VALUES('" + _lexema + "',"+"'"+_tipo+"');";
+            string comando_sql = "INSERT INTO sys_token(lexema, tipo_lexema, linea_columna) VALUES('" + _lexema + "',"+"'"+_tipo+"','"+_linea_columna+"');";
             try
             {
                 MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
@@ -432,7 +434,7 @@ namespace proyecto_compiladores
         {
             MySqlConnection conexion_db = cn.conexion_db();
             conexion_db.Open();
-            string comando_sql = "INSERT INTO sys_token_validado SELECT 0 as id_token_validado, lexema as lexema, tipo_lexema as tipo_lexema  from sys_token where not (tipo_lexema like '%Comentario%' or tipo_lexema like '%error%');";
+            string comando_sql = "INSERT INTO sys_token_validado SELECT 0 as id_token_validado, lexema as lexema, tipo_lexema as tipo_lexema, linea_columna as linea_columna from sys_token where not (tipo_lexema like '%Comentario%' or tipo_lexema like '%error%');";
             try
             {
                 MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
@@ -523,6 +525,76 @@ namespace proyecto_compiladores
             {
                 conexion_db.Close();
             }
+        }
+
+        public string getToken()
+        {
+
+            MySqlConnection conexion_db = cn.conexion_db();
+            conexion_db.Open();
+            List<Object> lista = new List<object>();
+            string comando_sql = "SELECT * FROM sys_token_validado WHERE id_token_validado = " + indice;
+            string lexema = ""; 
+            try
+            {
+                MySqlDataReader reader;
+                MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
+                reader = comando.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        lexema = reader.GetString(1);
+                        linea_columna = reader.GetString(3);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("error:" + e);
+            }
+            finally
+            {
+                conexion_db.Close();
+                indice = indice + 1;
+            }
+
+            return lexema;
+        }
+
+        public string nextToken()
+        {
+
+            MySqlConnection conexion_db = cn.conexion_db();
+            conexion_db.Open();
+            List<Object> lista = new List<object>();
+            int proximo_indice = indice + 1;
+            string comando_sql = "SELECT * FROM sys_token_validado WHERE id_token_validado = " + proximo_indice;
+            string lexema = "";
+            try
+            {
+                MySqlDataReader reader;
+                MySqlCommand comando = new MySqlCommand(comando_sql, conexion_db);
+                reader = comando.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        lexema = reader.GetString(1);
+                        linea_columna = reader.GetString(3);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("error:" + e);
+            }
+            finally
+            {
+                conexion_db.Close();
+            }
+
+            return lexema;
         }
 
     }

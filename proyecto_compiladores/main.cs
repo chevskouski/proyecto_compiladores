@@ -81,5 +81,10 @@ namespace proyecto_compiladores
             tokens.Show();
             tokens.cargar_simbolos();
         }
+
+        private void btn_validar_rp1_Click(object sender, EventArgs e)
+        {
+            txt_output.Text = funciones.regla_produccion_1_S();
+        }
     }
 }

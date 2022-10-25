@@ -110,7 +110,7 @@ namespace proyecto_compiladores
             //Inicializando Variables Necesarias
             int longitud_cadena = _cadena.Length - 1; string leer_caracter;
             char caracter; int estado = 0; string operadores_signos_lista = "[-:<>|+/&(){};,=*]";
-            string lexema = null; string tipo_lexema = null;
+            string lexema = null; string tipo_lexema = null; string linea_columna = null;
             mantenimiento _mantenimiento = new mantenimiento();
             string[] _tipo_lexema = { "Identificador", "Numero Entero", "Numero Decimal", "Operador", "Signo de Puntuación", "String", "Comentario", "Palabra Reservada" };
             Linea = 1; Columna = 1;
@@ -119,7 +119,7 @@ namespace proyecto_compiladores
             //Metodo interno para ingresar los tokens analizados a la base de datos
             void db_insertar_token()
             {
-                _mantenimiento.insertar_token(lexema, tipo_lexema);
+                _mantenimiento.insertar_token(lexema, tipo_lexema, linea_columna);
                 tipo_lexema = null; lexema = null; estado = 0;
             }
 
@@ -141,7 +141,14 @@ namespace proyecto_compiladores
             for (int i = 0; i <= longitud_cadena; i++)
             {
                 leer_caracter = leer_cadena_caracteres(_cadena, i);
-
+                if(longitud_cadena != i)
+                {
+                    columna_caracter = Columna - 2;
+                }
+                else
+                {
+                    columna_caracter = Columna - 1;
+                }
 
                 //Estandarizacion y conversion del sitring obtenido a char.
                 if (leer_caracter == "[espacio]:32")
@@ -164,6 +171,8 @@ namespace proyecto_compiladores
                 {
                     caracter = char.Parse(leer_caracter);
                 }
+
+                linea_columna = "Linea: " + Linea + ". Columna: " + columna_caracter;
 
                 //Filtro e Identificación de lexemas
                 switch (estado)
@@ -445,10 +454,63 @@ namespace proyecto_compiladores
             return tipo_lexema;
         }
 
-        public void generar_simbolos()
+        public string regla_produccion_1_S()
         {
-            int _id_descipcion = 0;
-            string tipo = null;
+            //Esta regla valida: Main(){}
+            string resultado = null;
+            mantenimiento _mantenimiento = new mantenimiento();
+
+            if(_mantenimiento.getToken().ToLower() == "main")
+            {
+                if (_mantenimiento.getToken() == "(") 
+                {
+                    if (_mantenimiento.getToken() == ")")
+                    {
+                        if (_mantenimiento.getToken() == "{")
+                        {
+                            if (_mantenimiento.getToken() == "}")
+                            {
+
+                                _mantenimiento.indice = _mantenimiento.indice - 1;
+                                if (_mantenimiento.nextToken() == "")
+                                {
+                                    resultado = "GRAMÁTICA VALIDA. No se encontraron errores. ";
+                                }
+                                else // Verificar si existe alguna funcion, id, etc. fuera de la estructura main.
+                                {
+                                    resultado = "Error de sintaxis, token: " + _mantenimiento.nextToken() +". Fuera del main. " + _mantenimiento.linea_columna;
+                                }
+
+                            }
+                            else
+                            {
+                                resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: }";
+                            }
+                        }
+                        else
+                        {
+                            resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: {";
+                        }
+                    }
+                    else
+                    {
+                        resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: )";
+                    }
+                }
+                else
+                {
+                    resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: (";
+                }
+            }
+            else
+            {
+                resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: Main";
+            }
+
+            _mantenimiento.indice = 1;
+
+            return resultado;
+
         }
 
     }
