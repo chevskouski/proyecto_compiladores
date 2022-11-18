@@ -527,14 +527,13 @@ namespace proyecto_compiladores
             }
         }
 
-        public string getToken()
+        public string[] getToken()
         {
-
             MySqlConnection conexion_db = cn.conexion_db();
             conexion_db.Open();
-            List<Object> lista = new List<object>();
+            string[] token_datos = new string[3];
             string comando_sql = "SELECT * FROM sys_token_validado WHERE id_token_validado = " + indice;
-            string lexema = ""; 
+
             try
             {
                 MySqlDataReader reader;
@@ -544,8 +543,9 @@ namespace proyecto_compiladores
                 {
                     while (reader.Read())
                     {
-                        lexema = reader.GetString(1);
-                        linea_columna = reader.GetString(3);
+                        token_datos[0] = reader.GetString(1);
+                        token_datos[1] = reader.GetString(2);
+                        token_datos[2] = reader.GetString(3);
                     }
                 }
             }
@@ -556,21 +556,19 @@ namespace proyecto_compiladores
             finally
             {
                 conexion_db.Close();
-                indice = indice + 1;
             }
 
-            return lexema;
+            return token_datos;
         }
 
-        public string nextToken()
+        public string[] nextToken()
         {
 
             MySqlConnection conexion_db = cn.conexion_db();
             conexion_db.Open();
-            List<Object> lista = new List<object>();
+            string[] token_datos = new string[3];
             int proximo_indice = indice + 1;
             string comando_sql = "SELECT * FROM sys_token_validado WHERE id_token_validado = " + proximo_indice;
-            string lexema = "";
             try
             {
                 MySqlDataReader reader;
@@ -580,8 +578,9 @@ namespace proyecto_compiladores
                 {
                     while (reader.Read())
                     {
-                        lexema = reader.GetString(1);
-                        linea_columna = reader.GetString(3);
+                        token_datos[0] = reader.GetString(1);
+                        token_datos[1] = reader.GetString(2);
+                        token_datos[2] = reader.GetString(3);
                     }
                 }
             }
@@ -594,7 +593,7 @@ namespace proyecto_compiladores
                 conexion_db.Close();
             }
 
-            return lexema;
+            return token_datos;
         }
 
     }

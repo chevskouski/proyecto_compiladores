@@ -454,64 +454,400 @@ namespace proyecto_compiladores
             return tipo_lexema;
         }
 
+        mantenimiento _mantenimiento_produccion = new mantenimiento();
+
         public string regla_produccion_1_S()
         {
-            //Esta regla valida: Main(){}
-            string resultado = null;
-            mantenimiento _mantenimiento = new mantenimiento();
+            string resultado_parser = "";
 
-            if(_mantenimiento.getToken().ToLower() == "main")
+            if (_mantenimiento_produccion.getToken()[0].ToLower() == "main")
             {
-                if (_mantenimiento.getToken() == "(") 
+                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                if (_mantenimiento_produccion.getToken()[0].ToLower() == "(")
                 {
-                    if (_mantenimiento.getToken() == ")")
+                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                    if (_mantenimiento_produccion.getToken()[0].ToLower() == ")")
                     {
-                        if (_mantenimiento.getToken() == "{")
+                        _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                        if (_mantenimiento_produccion.getToken()[0].ToLower() == "{")
                         {
-                            if (_mantenimiento.getToken() == "}")
+                            if(_mantenimiento_produccion.nextToken()[0] != null)
                             {
-
-                                _mantenimiento.indice = _mantenimiento.indice - 1;
-                                if (_mantenimiento.nextToken() == "")
+                                while (_mantenimiento_produccion.nextToken()[0] != "}")
                                 {
-                                    resultado = "GRAMÁTICA VALIDA. No se encontraron errores. ";
+                                    if (_mantenimiento_produccion.nextToken()[0] == null)
+                                    {
+                                        break;
+                                    }
+                                    resultado_parser += regla_produccion_2_3_4_C() + Environment.NewLine;
+                                    if (resultado_parser.Contains("ERROR"))
+                                    {
+                                        break;
+                                    }
                                 }
-                                else // Verificar si existe alguna funcion, id, etc. fuera de la estructura main.
+
+                                if(!resultado_parser.Contains("ERROR") && resultado_parser.Contains("OK"))
                                 {
-                                    resultado = "Error de sintaxis, token: " + _mantenimiento.nextToken() +". Fuera del main. " + _mantenimiento.linea_columna;
+                                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                                    if (_mantenimiento_produccion.getToken()[0] == "}")
+                                    {
+                                        if (_mantenimiento_produccion.nextToken()[0] == null)
+                                        {
+                                            resultado_parser += "[ ESTADO | OK ] — Estructura Main" + Environment.NewLine +"GRAMÁTICA VALIDA. No se encontraron errores. ";
+                                        }
+                                        else // Verificar si existe alguna funcion, id, etc. fuera de la estructura main.
+                                        {
+                                            resultado_parser += "[ ESTADO | ERROR ] — Error de sintaxis, token: " + _mantenimiento_produccion.nextToken()[0] + ". Fuera del main. " + _mantenimiento_produccion.getToken()[2];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        resultado_parser += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: }";
+                                    }
                                 }
 
                             }
                             else
                             {
-                                resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: }";
+                                resultado_parser += "[ ESTADO | ERROR ] — Error de sintaxis: Se Esperaba: }";
                             }
+
                         }
                         else
                         {
-                            resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: {";
+                            resultado_parser = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: {";
                         }
                     }
                     else
                     {
-                        resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: )";
+                        resultado_parser = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: )";
                     }
                 }
                 else
                 {
-                    resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: (";
+                    resultado_parser = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: (";
                 }
             }
             else
             {
-                resultado = "Error de sintaxis en la " + _mantenimiento.linea_columna + ". Se Esperaba: Main";
+                resultado_parser = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: Main";
             }
 
-            _mantenimiento.indice = 1;
-
-            return resultado;
-
+            _mantenimiento_produccion.indice =  1;
+            return resultado_parser;
         }
+
+        public string regla_produccion_2_3_4_C ()
+        {
+            string estado_resultado = "ok";
+            if (_mantenimiento_produccion.nextToken()[0].ToLower() == "dim")
+            {
+                estado_resultado = regla_produccion_2_D();
+            }
+            else if(_mantenimiento_produccion.nextToken()[1].ToLower() == "identificador")
+            {
+                estado_resultado = regla_produccion_3_A();
+            }
+            else if (_mantenimiento_produccion.nextToken()[0].ToLower() == "if")
+            {
+                estado_resultado = regla_produccion_4_IF();
+            }
+            else
+            {
+                estado_resultado = "ERROR no se esperaba: " + _mantenimiento_produccion.nextToken()[0] + ". Se espera: Dim, If, o Id";
+            }
+            return estado_resultado;
+        }
+
+        public string regla_produccion_2_D ()
+        {
+            string estado_resultado = "ok";
+            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+            if (_mantenimiento_produccion.getToken()[0].ToLower() == "dim")
+            {
+                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador")
+                {
+                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                    if (_mantenimiento_produccion.getToken()[0].ToLower() == "as")
+                    {
+                        _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                        if (_mantenimiento_produccion.getToken()[0].ToLower() == "integer" || _mantenimiento_produccion.getToken()[0].ToLower() == "decimal" || _mantenimiento_produccion.getToken()[0].ToLower() == "string")
+                        {
+                                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                            if (_mantenimiento_produccion.getToken()[0].ToLower() == ";")
+                            {
+                                estado_resultado = "[ ESTADO | OK ] — Declaración de Variable — " + _mantenimiento_produccion.getToken()[2].Remove(10);
+                            }
+                            else
+                            {
+                                estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: ;";
+                            }
+                        }
+                        else
+                        {
+                            estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba el Tipo de Dato";
+                        }
+                    }
+                    else
+                    {
+                        estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: As";
+                    }
+                }
+                else
+                {
+                    estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba un ID";
+                }
+            }
+            return estado_resultado;
+        }
+
+        public string regla_produccion_3_A()
+        {
+            string estado_resultado = "ok";
+
+            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+            if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador")
+            {
+                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                if (_mantenimiento_produccion.getToken()[0].ToLower() == ":=")
+                {
+                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                    if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador" || _mantenimiento_produccion.getToken()[1].ToLower() == "numero entero" || _mantenimiento_produccion.getToken()[1].ToLower() == "numero decimal" || _mantenimiento_produccion.getToken()[1].ToLower() == "string")
+                    {
+                        _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                        if (_mantenimiento_produccion.getToken()[0].ToLower() == ";")
+                        {
+                            estado_resultado = "[ ESTADO | OK ] — Asignación de Variable — " + _mantenimiento_produccion.getToken()[2].Remove(10);
+                        }
+                        else
+                        {
+                            estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: ;";
+                        }
+                    }
+                    else
+                    {
+                        estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba valor del dato: Entero, decimal, cadena o id";
+                    }
+                }
+                else
+                {
+                    estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: :=";
+                }
+            }
+            else
+            {
+                estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba un ID";
+            }
+
+                return estado_resultado;
+        }
+
+        public string regla_produccion_4_IF()
+        {
+            string estado_resultado = "";
+
+            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+            if (_mantenimiento_produccion.getToken()[0].ToLower() == "if")
+            {
+                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                if (_mantenimiento_produccion.getToken()[0].ToLower() == "(")
+                {
+                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                    if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador")
+                    {
+                        _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                        if (_mantenimiento_produccion.getToken()[0].ToLower() == "=" || _mantenimiento_produccion.getToken()[0].ToLower() == "<>" || _mantenimiento_produccion.getToken()[0].ToLower() == "<" || _mantenimiento_produccion.getToken()[0].ToLower() == ">")
+                        {
+                            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                            if (_mantenimiento_produccion.getToken()[1].ToLower() == "numero entero" || _mantenimiento_produccion.getToken()[1].ToLower() == "numero decimal" || _mantenimiento_produccion.getToken()[1].ToLower() == "string" || _mantenimiento_produccion.getToken()[1].ToLower() == "identificador")
+                            {
+                                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                                if (_mantenimiento_produccion.getToken()[0].ToLower() == ")")
+                                {
+                                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                                    if (_mantenimiento_produccion.getToken()[0].ToLower() == "then")
+                                    {
+
+                                        while (_mantenimiento_produccion.nextToken()[0] != ";")
+                                        {
+                                            if (_mantenimiento_produccion.nextToken()[0] == null)
+                                            {
+                                                break;
+                                            }
+                                            estado_resultado += regla_produccion_2_3_4_C_IF() + Environment.NewLine;
+                                            if (estado_resultado.Contains("ERROR") || _mantenimiento_produccion.nextToken()[0].ToLower() == "else")
+                                            {
+                                                break;
+                                            }
+                                        }
+
+
+                                        _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                                        if (_mantenimiento_produccion.getToken()[0].ToLower() == ";" && !estado_resultado.Contains("ERROR"))
+                                        {
+                                            estado_resultado += "[ ESTADO | OK ] — Estructura IF — " + _mantenimiento_produccion.getToken()[2].Remove(10);
+                                        }
+                                        else if (_mantenimiento_produccion.getToken()[0].ToLower() == "else" && !estado_resultado.Contains("ERROR"))
+                                        {
+
+                                            while (_mantenimiento_produccion.nextToken()[0] != ";")
+                                            {                                               
+                                                if (_mantenimiento_produccion.nextToken()[0] == null)
+                                                {
+                                                    break;
+                                                }
+                                                estado_resultado += regla_produccion_2_3_4_C_IF() + Environment.NewLine;
+                                                if (estado_resultado.Contains("ERROR") || _mantenimiento_produccion.nextToken()[0].ToLower() == "}" || _mantenimiento_produccion.nextToken()[0].ToLower() == null)
+                                                {
+                                                    break;
+                                                }
+                                            }
+
+                                            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                                            if (_mantenimiento_produccion.getToken()[0].ToLower() == ";" && !estado_resultado.Contains("ERROR"))
+                                            {
+                                                estado_resultado += "[ ESTADO | OK ] — Estructura IF";
+                                            }
+                                        }
+                                        else if (!estado_resultado.Contains("ERROR"))
+                                        {
+                                            estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: ; ó else";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: Then";
+                                    }
+                                }
+                                else
+                                {
+                                    estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: )";
+                                }
+                            }
+                            else
+                            {
+                                estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba el valor del dato";
+                            }
+                        }
+                        else
+                        {
+                            estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba un operador";
+                        }
+                    }
+                    else
+                    {
+                        estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba un Identificador (ID)";
+                    }
+                }
+                else
+                {
+                    estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: (";
+                }
+            }
+            else
+            {
+                estado_resultado += "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba palabra reservada: IF";
+            }
+
+            return estado_resultado;
+        }
+
+
+        public string regla_produccion_3_A_IF()
+        {
+            string estado_resultado = "ok";
+
+            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+            if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador")
+            {
+                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                if (_mantenimiento_produccion.getToken()[0].ToLower() == ":=")
+                {
+                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                    if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador" || _mantenimiento_produccion.getToken()[1].ToLower() == "numero entero" || _mantenimiento_produccion.getToken()[1].ToLower() == "numero decimal" || _mantenimiento_produccion.getToken()[1].ToLower() == "string")
+                    {
+                        estado_resultado = "[ ESTADO | OK ] — Asignación de Variable — " + _mantenimiento_produccion.getToken()[2].Remove(10);
+
+                    }
+                    else
+                    {
+                        estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba valor del dato: Entero, decimal, cadena o id";
+                    }
+                }
+                else
+                {
+                    estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: :=";
+                }
+            }
+            else
+            {
+                estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba un ID";
+            }
+
+            return estado_resultado;
+        }
+
+        public string regla_produccion_2_D_IF()
+        {
+            string estado_resultado = "ok";
+            _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+            if (_mantenimiento_produccion.getToken()[0].ToLower() == "dim")
+            {
+                _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                if (_mantenimiento_produccion.getToken()[1].ToLower() == "identificador")
+                {
+                    _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                    if (_mantenimiento_produccion.getToken()[0].ToLower() == "as")
+                    {
+                        _mantenimiento_produccion.indice = _mantenimiento_produccion.indice + 1;
+                        if (_mantenimiento_produccion.getToken()[0].ToLower() == "integer" || _mantenimiento_produccion.getToken()[0].ToLower() == "decimal" || _mantenimiento_produccion.getToken()[0].ToLower() == "string")
+                        {
+                            estado_resultado = "[ ESTADO | OK ] — Declaración de Variable — " + _mantenimiento_produccion.getToken()[2].Remove(10);
+                        }
+                        else
+                        {
+                            estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba el Tipo de Dato";
+                        }
+                    }
+                    else
+                    {
+                        estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba: As";
+                    }
+                }
+                else
+                {
+                    estado_resultado = "[ ESTADO | ERROR ] — Error de sintaxis en el token **" + _mantenimiento_produccion.getToken()[0] + "**, en la " + _mantenimiento_produccion.getToken()[2] + ". Se Esperaba un ID";
+                }
+            }
+            return estado_resultado;
+        }
+
+        public string regla_produccion_2_3_4_C_IF()
+        {
+            string estado_resultado = "ok";
+            if (_mantenimiento_produccion.nextToken()[0].ToLower() == "dim")
+            {
+                //estado_resultado = regla_produccion_2_D_IF();
+                estado_resultado = "[ ESTADO | ERROR ] — Se esperaba asignación o if";
+            }
+            else if (_mantenimiento_produccion.nextToken()[1].ToLower() == "identificador")
+            {
+                estado_resultado = regla_produccion_3_A_IF();
+            }
+            else if (_mantenimiento_produccion.nextToken()[0].ToLower() == "if")
+            {
+                estado_resultado = regla_produccion_4_IF();
+            }
+            else
+            {
+                estado_resultado = "[ ESTADO | ERROR ] — Se esperaba asignación o ;. " + _mantenimiento_produccion.nextToken()[2];
+            }
+            
+            return estado_resultado;
+        }
+
+
 
     }
 }

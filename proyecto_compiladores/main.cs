@@ -84,7 +84,10 @@ namespace proyecto_compiladores
 
         private void btn_validar_rp1_Click(object sender, EventArgs e)
         {
-            txt_output.Text = funciones.regla_produccion_1_S();
+            if (txt_input.Text != "")
+            {
+                txt_output.Text = funciones.regla_produccion_1_S();
+            }
         }
     }
 }
